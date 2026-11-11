@@ -1,5 +1,11 @@
 // START & ACTIONS LAYER: Handles event listening and application startup
 
+// Helper function to format current time for comments
+function getFormattedTime() {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
 // Submit Comment Handler
 function handleCommentSubmit(event) {
     event.preventDefault();
@@ -10,10 +16,12 @@ function handleCommentSubmit(event) {
     if (!commentText) return;
 
     // Analyze text using rules layer
-    const analysis = analyzeComment(commentText);
+    const analysis = (typeof analyzeComment === 'function') 
+        ? analyzeComment(commentText) 
+        : { isToxic: false };
 
     if (analysis.isToxic) {
-        // Intercept hate comment: Add to OP pending queue silently from commenter POV
+        // Intercept toxic comment: Add to OP pending queue silently from commenter POV
         const pendingEntry = {
             id: Date.now(),
             user: "guest_user",
@@ -24,7 +32,9 @@ function handleCommentSubmit(event) {
         pendingComments.unshift(pendingEntry);
 
         // Show Evaporation Effect for commenter
-        triggerEvaporationAnimation(commentText);
+        if (typeof triggerEvaporationAnimation === 'function') {
+            triggerEvaporationAnimation(commentText);
+        }
     } else {
         // Positive/neutral comment: Post publicly immediately
         const publicEntry = {
@@ -64,9 +74,18 @@ function rejectComment(commentId) {
     }
 }
 
-// Initialize application on window load
+// Initialize application on window load safely
 window.onload = function() {
-    loadToxicWords().then(() => {
+    if (typeof loadToxicWords === 'function') {
+        loadToxicWords()
+            .then(() => {
+                renderViews();
+            })
+            .catch((err) => {
+                console.warn("Could not fetch toxic_words.json, proceeding with default words.", err);
+                renderViews();
+            });
+    } else {
         renderViews();
-    });
+    }
 };
