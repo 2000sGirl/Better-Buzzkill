@@ -1,5 +1,19 @@
 // PRESENTATION LAYER: Handles DOM updates and user interface display logic
 
+// Helper function to prevent HTML injection and rendering errors
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, function(tag) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag;
+    });
+}
+
 // Tab Switching Logic
 function switchTab(tab) {
     const tabCommenter = document.getElementById('tab-commenter');
@@ -7,6 +21,8 @@ function switchTab(tab) {
     const viewCommenter = document.getElementById('view-commenter-container');
     const viewOp = document.getElementById('view-op-container');
     const viewBanner = document.getElementById('view-banner');
+
+    if (!tabCommenter || !tabOp || !viewCommenter || !viewOp || !viewBanner) return;
 
     if (tab === 'commenter') {
         tabCommenter.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-gray-800 shadow-sm font-semibold";
