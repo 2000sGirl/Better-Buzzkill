@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buzzkill - Instagram Comment Moderation Demo</title>
+    <!-- Tailwind CSS for modern responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Instagram-like icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom stylesheet -->
+    <link rel="stylesheet" href="3_styles/style.css">
+</head>
+<body class="bg-gray-100 font-sans antialiased text-gray-900 min-h-screen flex flex-col items-center">
+
+    <!-- Top App Navigation / Header -->
+    <header class="w-full max-w-md bg-white border-b border-gray-200 sticky top-0 z-30 px-4 py-3 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-2">
+            <span class="text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 bg-clip-text text-transparent">
+                Buzzkill
+            </span>
+            <span class="text-xs bg-purple-100 text-purple-700 font-medium px-2 py-0.5 rounded-full">Demo</span>
+        </div>
+        <!-- Tab Controls -->
+        <div class="flex bg-gray-100 p-1 rounded-xl gap-1 text-xs font-semibold">
+            <button id="tab-commenter" onclick="switchTab('commenter')" class="px-3 py-1.5 rounded-lg transition-all bg-white text-gray-800 shadow-sm">
+                <i class="fa-regular fa-user mr-1"></i> Commenter
+            </button>
+            <button id="tab-op" onclick="switchTab('op')" class="px-3 py-1.5 rounded-lg transition-all text-gray-500 hover:text-gray-800 relative">
+                <i class="fa-solid fa-shield-halved mr-1"></i> OP View
+                <span id="badge-pending-count" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container Mockup (Mobile Frame) -->
+    <main class="w-full max-w-md bg-white flex-1 flex flex-col shadow-lg min-h-[85vh] relative pb-16">
+
+        <!-- Banner Alert for Active View Mode -->
+        <div id="view-banner" class="bg-blue-50 border-b border-blue-100 px-4 py-2 text-xs text-blue-700 flex justify-between items-center">
+            <span><i class="fa-solid fa-circle-info mr-1"></i> <strong>Commenter Mode:</strong> Post comments to test moderation.</span>
+        </div>
+
+        <!-- ================= COMMENTER VIEW ================= -->
+        <div id="view-commenter-container" class="flex-1 flex flex-col">
+            <!-- Post Header -->
+            <div class="px-4 py-3 flex items-center justify-between border-b border-gray-100">
+                <div class="flex items-center space-x-3">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-purple-200">
+                    <div>
+                        <p class="text-xs font-bold leading-none text-gray-800">alexa_design</p>
+                        <p class="text-[10px] text-gray-400">San Francisco, CA</p>
+                    </div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+
+            <!-- Post Image -->
+            <div class="relative bg-gray-900 w-full aspect-square">
+                <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop&q=80" alt="Post Image" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Post Action Buttons -->
+            <div class="px-4 pt-3 pb-1 flex justify-between items-center text-xl">
+                <div class="flex space-x-4 text-gray-700">
+                    <button class="hover:text-red-500 transition-colors"><i class="fa-regular fa-heart"></i></button>
+                    <button class="hover:text-blue-500 transition-colors"><i class="fa-regular fa-comment"></i></button>
+                    <button class="hover:text-green-500 transition-colors"><i class="fa-regular fa-paper-plane"></i></button>
+                </div>
+                <button class="text-gray-700 hover:text-black"><i class="fa-regular fa-bookmark"></i></button>
+            </div>
+
+            <!-- Likes & Caption -->
+            <div class="px-4 text-xs space-y-1 mb-2">
+                <p class="font-bold text-gray-800">1,248 likes</p>
+                <p><span class="font-bold text-gray-800 mr-1">alexa_design</span>Excited to share my latest outfit concept! What do you guys think? 🎨✨</p>
+                <p class="text-[10px] text-gray-400 uppercase tracking-wide">2 hours ago</p>
+            </div>
+
+            <!-- Live Public Comments Section -->
+            <div class="flex-1 px-4 py-2 border-t border-gray-100 flex flex-col justify-end">
+                <h4 class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Comments (<span id="public-comment-count">0</span>)</h4>
+                
+                <!-- Comments Scrollable Area -->
+                <div id="public-comments-list" class="space-y-2.5 max-h-48 overflow-y-auto custom-scrollbar pr-1">
+                    <!-- Dynamic comments populated by JS -->
+                </div>
+
+                <!-- Floating Feedback Notice (Evaporation Toast) -->
+                <div id="evaporation-toast" class="hidden mt-2 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 flex items-center justify-between transition-all">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-red-500"></i>
+                        <span>Comment filtered due to harmful language.</span>
+                    </div>
+                    <span class="text-[10px] bg-red-100 text-red-700 font-semibold px-2 py-0.5 rounded">Intercepted</span>
+                </div>
+            </div>
+
+            <!-- Comment Input Box -->
+            <div class="p-3 border-t border-gray-200 bg-white">
+                <form id="comment-form" onsubmit="handleCommentSubmit(event)" class="flex items-center space-x-2">
+                    <input 
+                        type="text" 
+                        id="comment-input" 
+                        placeholder="Add a comment... (try testing slang or hate speech)" 
+                        class="flex-1 bg-gray-100 text-xs px-3 py-2.5 rounded-full border border-transparent focus:outline-none focus:bg-white focus:border-purple-400 transition-all"
+                        required 
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="text-xs font-bold text-purple-600 hover:text-purple-800 px-3 py-2 transition-colors">
+                        Post
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ================= OP (ORIGINAL POSTER) REVIEW VIEW ================= -->
+        <div id="view-op-container" class="hidden flex-1 flex flex-col p-4 bg-gray-50">
+            <!-- Header for OP Queue -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800">Pending Comment Approvals</h3>
+                    <p class="text-xs text-gray-500">Review comments flagged by the Buzzkill AI Interceptor before they go public.</p>
+                </div>
+                <span id="op-queue-badge" class="bg-purple-100 text-purple-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                    0 Pending
+                </span>
+            </div>
+
+            <!-- Filtered Slang Key Reference for Demo -->
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-2.5 mb-4 text-xs text-amber-800">
+                <p class="font-bold flex items-center gap-1 mb-1">
+                    <i class="fa-solid fa-lightbulb"></i> Test Keywords Triggering Moderation:
+                </p>
+                <div class="flex flex-wrap gap-1 mt-1">
+                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-mono">hate</span>
+                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-mono">ugly</span>
+                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-mono">stupid</span>
+                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-mono">mid</span>
+                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-mono">flop</span>
+                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-mono">trash</span>
+                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-mono">npc</span>
+                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded text-[10px] font-mono">ratio</span>
+                </div>
+            </div>
+
+            <!-- Moderation Cards Queue -->
+            <div id="op-review-list" class="space-y-3 flex-1 overflow-y-auto custom-scrollbar pr-1">
+                <!-- Dynamically populated review cards -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Numbered Layered Scripts loaded in sequence -->
+    <script src="2_scripts/1_data.js"></script>
+    <script src="2_scripts/2_rules.js"></script>
+    <script src="2_scripts/3_display.js"></script>
+    <script src="2_scripts/4_start.js"></script>
+</body>
+</html>
