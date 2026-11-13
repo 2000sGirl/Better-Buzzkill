@@ -1,0 +1,13 @@
+Goal:        Build Buzzkill, an Instagram-style comment moderation demo for creators and everyday users to filter toxic comments before they go public
+Files:       index.html - main page layout with Commenter and Original Poster (OP) tabs
+             3_styles/style.css - custom scrollbar and evaporation animation styles
+             1_data/toxic_words.json - JSON list of 91 refined flagged keywords, slang, and phrases
+             2_scripts/1_data.js - stores comment arrays, 91-item fallback list, and loads toxic_words.json
+             2_scripts/2_rules.js - checks comments against the flagged word list using word boundaries
+             2_scripts/3_display.js - renders public comments, OP review queue, and evaporation effect
+             2_scripts/4_start.js - handles form submission, approve/reject buttons, and app startup
+             README.md - project description and feature list
+Working now: Commenter and OP views load cleanly; 91 flagged words and phrases evaporate while friendly comments pass through
+Just did:    Removed 7 false-positive words (no, why, stop, basic, delete, messy, ruined) and added 5 specific negative phrases
+Next step:   Choose the next feature, UI improvement, or bug fix to build
+Watch out:   index.html still displays only the original 8 sample keywords in the OP View hint box
