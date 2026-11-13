@@ -20,24 +20,19 @@ function switchTab(tab) {
     const tabOp = document.getElementById('tab-op');
     const viewCommenter = document.getElementById('view-commenter-container');
     const viewOp = document.getElementById('view-op-container');
-    const viewBanner = document.getElementById('view-banner');
 
-    if (!tabCommenter || !tabOp || !viewCommenter || !viewOp || !viewBanner) return;
+    if (!tabCommenter || !tabOp || !viewCommenter || !viewOp) return;
 
     if (tab === 'commenter') {
         tabCommenter.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-gray-800 shadow-sm font-semibold";
         tabOp.className = "px-3 py-1.5 rounded-lg transition-all text-gray-500 hover:text-gray-800 relative font-semibold";
         viewCommenter.classList.remove('hidden');
         viewOp.classList.add('hidden');
-        viewBanner.className = "bg-blue-50 border-b border-blue-100 px-4 py-2 text-xs text-blue-700 flex justify-between items-center";
-        viewBanner.innerHTML = '<span><i class="fa-solid fa-circle-info mr-1"></i> <strong>Commenter Mode:</strong> Post comments to test moderation.</span>';
     } else {
         tabOp.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-gray-800 shadow-sm font-semibold relative";
         tabCommenter.className = "px-3 py-1.5 rounded-lg transition-all text-gray-500 hover:text-gray-800 font-semibold";
         viewOp.classList.remove('hidden');
         viewCommenter.classList.add('hidden');
-        viewBanner.className = "bg-purple-50 border-b border-purple-100 px-4 py-2 text-xs text-purple-700 flex justify-between items-center";
-        viewBanner.innerHTML = '<span><i class="fa-solid fa-shield-halved mr-1"></i> <strong>Original Poster (OP) Mode:</strong> Review intercepted comments.</span>';
     }
     renderViews();
 }
