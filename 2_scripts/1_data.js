@@ -2,9 +2,21 @@
 
 // Fallback toxic words list in case JSON load fails
 let toxicWordsList = [
-    "hate", "ugly", "stupid", "dumb", "idiot", "loser", 
-    "mid", "flop", "trash", "npc", "ratio", "cringe", "gross",
-    "horrible", "awful", "cancel"
+    "attention-seeking", "attention-seeker", "delete this", "do better",
+    "fell off", "give up", "go away", "hard watch", "looks cheap",
+    "nobody asked", "not it", "please no", "shut up", "skill issue",
+    "so fake", "stop posting", "touch grass", "try harder", "waste of time",
+    "who asked", "why post this", "annoying", "awful", "bizarre", "boring",
+    "bot", "bozo", "cancel", "cheap", "clickbait", "clown", "clueless",
+    "corny", "cringe", "cringey", "cringing", "delulu", "desperate",
+    "disaster", "disgusting", "dumb", "embarrassing", "embarrassment",
+    "fail", "failure", "fake", "flop", "fraud", "garbage", "gross", "hate",
+    "hideous", "horrible", "ick", "idiot", "insecure", "irrelevant", "lame",
+    "lazy", "loser", "mediocre", "mid", "npc", "obnoxious", "overrated",
+    "parasocial", "pathetic", "phony", "pickme", "pointless", "pressed",
+    "promo", "ratio", "salty", "scam", "scammer", "spam", "stupid", "tacky",
+    "terrible", "toxic", "trash", "tryhard", "ugly", "unattractive",
+    "unfollow", "useless", "wack", "washed", "worthless", "yikes"
 ];
 
 // Load toxic words list from JSON file with no-store cache
