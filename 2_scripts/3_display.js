@@ -37,6 +37,47 @@ function switchTab(tab) {
     renderViews();
 }
 
+// Update the API key status badge in OP View
+function renderApiKeyStatus() {
+    const badge = document.getElementById('api-key-status-badge');
+    if (!badge || typeof getSavedApiKey !== 'function') return;
+
+    const hasKey = Boolean(getSavedApiKey());
+    if (hasKey) {
+        badge.textContent = 'Key saved locally';
+        badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700';
+    } else {
+        badge.textContent = 'Not saved';
+        badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600';
+    }
+}
+
+// Show or hide a friendly API warning banner on the page
+function showApiStatusBanner(message) {
+    const banner = document.getElementById('api-status-banner');
+    const bannerText = document.getElementById('api-status-banner-text');
+    if (!banner || !bannerText) return;
+
+    if (!message) {
+        banner.classList.add('hidden');
+        return;
+    }
+
+    bannerText.textContent = message;
+    banner.classList.remove('hidden');
+}
+
+// Toggle loading state on the Post button while waiting for the API
+function setSubmitLoading(isLoading) {
+    const submitBtn = document.getElementById('comment-submit-btn');
+    const input = document.getElementById('comment-input');
+    if (!submitBtn || !input) return;
+
+    submitBtn.disabled = isLoading;
+    input.disabled = isLoading;
+    submitBtn.textContent = isLoading ? '...' : 'Post';
+}
+
 // Render Public Comments List
 function renderPublicComments() {
     const listElement = document.getElementById('public-comments-list');
@@ -105,17 +146,30 @@ function renderOPQueue() {
         const card = document.createElement('div');
         card.className = "bg-white border border-gray-200 rounded-xl p-3 shadow-sm flex flex-col justify-between space-y-2 transition-all hover:border-purple-200";
         
+        const wordBadge = comment.flaggedWord
+            ? `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] px-2 py-0.5 rounded-full font-medium">
+                   Word: "${escapeHTML(comment.flaggedWord)}"
+               </span>`
+            : '';
+
+        const sentimentBadge = comment.sentimentLabel
+            ? `<span class="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] px-2 py-0.5 rounded-full font-medium">
+                   ${escapeHTML(comment.sentimentLabel)}
+               </span>`
+            : '';
+
         card.innerHTML = `
-            <div class="flex justify-between items-start">
+            <div class="flex justify-between items-start gap-2 flex-wrap">
                 <div class="flex items-center space-x-2">
                     <span class="w-6 h-6 rounded-full bg-red-100 text-red-600 font-bold text-[10px] flex items-center justify-center">
                         ${comment.user.charAt(0).toUpperCase()}
                     </span>
                     <span class="text-xs font-bold text-gray-800">${comment.user}</span>
                 </div>
-                <span class="bg-red-50 text-red-600 border border-red-100 text-[10px] px-2 py-0.5 rounded-full font-medium">
-                    Flagged: "${comment.flaggedWord}"
-                </span>
+                <div class="flex items-center gap-1 flex-wrap">
+                    ${wordBadge}
+                    ${sentimentBadge}
+                </div>
             </div>
 
             <p class="text-xs text-gray-800 bg-gray-50 p-2 rounded-lg border border-gray-100 italic">
@@ -137,16 +191,22 @@ function renderOPQueue() {
 
 // Re-render all dynamic elements
 function renderViews() {
+    renderApiKeyStatus();
     renderPublicComments();
     renderOPQueue();
 }
 
-// Evaporation visual effect when a toxic comment is submitted
-function triggerEvaporationAnimation(text) {
+// Evaporation visual effect when a toxic or negative comment is submitted
+function triggerEvaporationAnimation(text, reasonMessage) {
     const listElement = document.getElementById('public-comments-list');
     const toast = document.getElementById('evaporation-toast');
+    const toastText = document.getElementById('evaporation-toast-text');
 
     if (!listElement || !toast) return;
+
+    if (toastText) {
+        toastText.textContent = reasonMessage || 'Comment filtered due to harmful language.';
+    }
 
     // Temporary element showing comment evaporating
     const tempEvapNode = document.createElement('div');

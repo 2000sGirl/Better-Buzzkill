@@ -1,4 +1,7 @@
-// DATA LAYER: Stores application data and handles loading information from files
+// DATA LAYER: Stores application data and handles loading information from files and APIs
+
+const API_KEY_STORAGE_NAME = 'buzzkill_api_ninjas_key';
+const SENTIMENT_API_URL = 'https://api.api-ninjas.com/v1/sentiment';
 
 // Fallback toxic words list in case JSON load fails
 let toxicWordsList = [
@@ -36,6 +39,52 @@ function loadToxicWords() {
         .catch(error => {
             console.warn('Using fallback toxic words list:', error);
         });
+}
+
+// Browser-only API key helpers (never stored in GitHub repo)
+function getSavedApiKey() {
+    return localStorage.getItem(API_KEY_STORAGE_NAME) || '';
+}
+
+function saveApiKey(key) {
+    localStorage.setItem(API_KEY_STORAGE_NAME, key.trim());
+}
+
+function clearApiKey() {
+    localStorage.removeItem(API_KEY_STORAGE_NAME);
+}
+
+// Fetch sentiment analysis from API Ninjas using the user's saved browser key
+async function fetchSentimentFromApi(text) {
+    const apiKey = getSavedApiKey();
+    if (!apiKey) {
+        return { skipped: true };
+    }
+
+    const requestUrl = `${SENTIMENT_API_URL}?text=${encodeURIComponent(text)}`;
+
+    try {
+        const response = await fetch(requestUrl, {
+            method: 'GET',
+            headers: {
+                'X-Api-Key': apiKey
+            },
+            cache: 'no-store'
+        });
+
+        if (!response.ok) {
+            return { error: `API returned status ${response.status}. Check your API key in OP View.` };
+        }
+
+        const data = await response.json();
+        return {
+            score: data.score,
+            sentiment: data.sentiment
+        };
+    } catch (error) {
+        console.warn('Sentiment API request failed:', error);
+        return { error: 'Could not reach the Sentiment API. Local filter is still active.' };
+    }
 }
 
 // Publicly visible comments store

@@ -6,8 +6,32 @@ function getFormattedTime() {
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+// Save API key entered by the OP in browser localStorage
+function saveApiKeyFromUI() {
+    const input = document.getElementById('api-key-input');
+    if (!input) return;
+
+    const value = input.value.trim();
+    if (!value) return;
+
+    saveApiKey(value);
+    input.value = '';
+    showApiStatusBanner('');
+    renderApiKeyStatus();
+}
+
+// Clear saved API key from browser localStorage
+function clearApiKeyFromUI() {
+    const input = document.getElementById('api-key-input');
+    if (input) input.value = '';
+
+    clearApiKey();
+    showApiStatusBanner('');
+    renderApiKeyStatus();
+}
+
 // Submit Comment Handler
-function handleCommentSubmit(event) {
+async function handleCommentSubmit(event) {
     event.preventDefault();
     const input = document.getElementById('comment-input');
     if (!input) return;
@@ -15,39 +39,64 @@ function handleCommentSubmit(event) {
 
     if (!commentText) return;
 
-    // Analyze text using rules layer
-    const analysis = (typeof analyzeComment === 'function') 
-        ? analyzeComment(commentText) 
-        : { isToxic: false };
+    setSubmitLoading(true);
+    showApiStatusBanner('');
 
-    if (analysis.isToxic) {
-        // Intercept toxic comment: Add to OP pending queue silently from commenter POV
-        const pendingEntry = {
-            id: Date.now(),
-            user: "guest_user",
-            text: commentText,
-            flaggedWord: analysis.word,
-            time: getFormattedTime()
-        };
-        pendingComments.unshift(pendingEntry);
+    try {
+        // 1. Check local keyword filter
+        const localAnalysis = (typeof analyzeComment === 'function')
+            ? analyzeComment(commentText)
+            : { isToxic: false, word: null };
 
-        // Show Evaporation Effect for commenter
-        if (typeof triggerEvaporationAnimation === 'function') {
-            triggerEvaporationAnimation(commentText);
+        // 2. Check API Ninjas Sentiment if an API key is saved in localStorage
+        const apiRawResult = (typeof fetchSentimentFromApi === 'function')
+            ? await fetchSentimentFromApi(commentText)
+            : { skipped: true };
+
+        if (apiRawResult && apiRawResult.error) {
+            showApiStatusBanner(apiRawResult.error);
         }
-    } else {
-        // Positive/neutral comment: Post publicly immediately
-        const publicEntry = {
-            id: Date.now(),
-            user: "guest_user",
-            text: commentText,
-            time: getFormattedTime()
-        };
-        publicComments.push(publicEntry);
-    }
 
-    input.value = '';
-    renderViews();
+        const sentimentAnalysis = (typeof evaluateSentimentResult === 'function')
+            ? evaluateSentimentResult(apiRawResult)
+            : { isNegative: false, label: null };
+
+        // 3. Intercept if flagged by either local keywords or negative sentiment
+        if (localAnalysis.isToxic || sentimentAnalysis.isNegative) {
+            const pendingEntry = {
+                id: Date.now(),
+                user: "guest_user",
+                text: commentText,
+                flaggedWord: localAnalysis.word,
+                sentimentLabel: sentimentAnalysis.isNegative ? sentimentAnalysis.label : null,
+                time: getFormattedTime()
+            };
+            pendingComments.unshift(pendingEntry);
+
+            const reasons = [];
+            if (localAnalysis.isToxic) reasons.push('blocked word');
+            if (sentimentAnalysis.isNegative) reasons.push('negative sentiment');
+            const reasonText = `Comment held for review: ${reasons.join(' and ')}.`;
+
+            if (typeof triggerEvaporationAnimation === 'function') {
+                triggerEvaporationAnimation(commentText, reasonText);
+            }
+        } else {
+            // Positive or neutral comment: Post publicly immediately
+            const publicEntry = {
+                id: Date.now(),
+                user: "guest_user",
+                text: commentText,
+                time: getFormattedTime()
+            };
+            publicComments.push(publicEntry);
+        }
+
+        input.value = '';
+    } finally {
+        setSubmitLoading(false);
+        renderViews();
+    }
 }
 
 // OP Action: Approve Pending Comment
