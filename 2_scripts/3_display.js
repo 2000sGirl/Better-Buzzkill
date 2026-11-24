@@ -52,6 +52,12 @@ function renderApiKeyStatus() {
     }
 }
 
+// Reflect the saved moderation option in OP View
+function renderModerationMode() {
+    const selectedMode = document.querySelector(`input[name="moderation-mode"][value="${moderationMode}"]`);
+    if (selectedMode) selectedMode.checked = true;
+}
+
 // Show or hide a friendly API warning banner on the page
 function showApiStatusBanner(message) {
     const banner = document.getElementById('api-status-banner');
@@ -136,7 +142,7 @@ function renderOPQueue() {
             <div class="text-center py-10 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                 <i class="fa-solid fa-circle-check text-green-500 text-3xl mb-2"></i>
                 <p class="text-xs font-bold text-gray-700">All clear!</p>
-                <p class="text-[11px] text-gray-400 mt-1">No flagged comments currently awaiting review.</p>
+                <p class="text-[11px] text-gray-400 mt-1">No comments currently awaiting review.</p>
             </div>
         `;
         return;
@@ -157,6 +163,9 @@ function renderOPQueue() {
                    ${escapeHTML(comment.sentimentLabel)}
                </span>`
             : '';
+        const reviewBadge = comment.reviewLabel
+            ? `<span class="bg-purple-50 text-purple-700 border border-purple-200 text-[10px] px-2 py-0.5 rounded-full font-medium">${escapeHTML(comment.reviewLabel)}</span>`
+            : '';
 
         card.innerHTML = `
             <div class="flex justify-between items-start gap-2 flex-wrap">
@@ -169,6 +178,7 @@ function renderOPQueue() {
                 <div class="flex items-center gap-1 flex-wrap">
                     ${wordBadge}
                     ${sentimentBadge}
+                    ${reviewBadge}
                 </div>
             </div>
 
@@ -192,6 +202,7 @@ function renderOPQueue() {
 // Re-render all dynamic elements
 function renderViews() {
     renderApiKeyStatus();
+    renderModerationMode();
     renderPostLike();
     renderPublicComments();
     renderOPQueue();

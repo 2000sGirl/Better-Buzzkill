@@ -146,11 +146,31 @@
                 </div>
             </div>
 
+            <!-- Comment moderation behavior -->
+            <fieldset class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
+                <legend class="text-xs font-bold text-gray-800 px-1">Comment Moderation</legend>
+                <p class="text-[11px] text-gray-500 mb-2">Choose what happens when someone posts a comment. Changes apply to new comments.</p>
+                <div class="space-y-2">
+                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
+                        <input type="radio" name="moderation-mode" value="all_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
+                        <span><span class="font-semibold">Review every comment</span><br><span class="text-[11px] text-gray-500">All comments wait for your approval.</span></span>
+                    </label>
+                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
+                        <input type="radio" name="moderation-mode" value="flagged_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
+                        <span><span class="font-semibold">Review flagged comments</span><br><span class="text-[11px] text-gray-500">Blocked words and negative sentiment wait for your approval.</span></span>
+                    </label>
+                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
+                        <input type="radio" name="moderation-mode" value="auto_block" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
+                        <span><span class="font-semibold">Block flagged comments</span><br><span class="text-[11px] text-gray-500">Flagged comments are blocked without entering the review queue.</span></span>
+                    </label>
+                </div>
+            </fieldset>
+
             <!-- Header for OP Queue -->
             <div class="flex justify-between items-center mb-4">
                 <div>
                     <h3 class="text-sm font-bold text-gray-800">Pending Comment Approvals</h3>
-                    <p class="text-xs text-gray-500">Review comments flagged by keywords or negative sentiment.</p>
+                    <p class="text-xs text-gray-500">Comments held by your moderation setting appear here.</p>
                 </div>
                 <span id="op-queue-badge" class="bg-purple-100 text-purple-700 text-xs font-bold px-2.5 py-1 rounded-full">
                     0 Pending
@@ -166,9 +186,9 @@
     </main>
 
     <!-- Numbered Layered Scripts loaded in sequence -->
-    <script src="2_scripts/1_data.js?v=4"></script>
+    <script src="2_scripts/1_data.js?v=5"></script>
     <script src="2_scripts/2.rules.js?v=5"></script>
-    <script src="2_scripts/3_display.js?v=4"></script>
-    <script src="2_scripts/4_start.js?v=4"></script>
+    <script src="2_scripts/3_display.js?v=5"></script>
+    <script src="2_scripts/4_start.js?v=5"></script>
 </body>
 </html>

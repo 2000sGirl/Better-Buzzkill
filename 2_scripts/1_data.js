@@ -1,7 +1,22 @@
 // DATA LAYER: Stores application data and handles loading information from files and APIs
 
 const API_KEY_STORAGE_NAME = 'buzzkill_api_ninjas_key';
+const MODERATION_MODE_STORAGE_KEY = 'buzzkill_moderation_mode';
 const SENTIMENT_API_URL = 'https://api.api-ninjas.com/v1/sentiment';
+const DEFAULT_MODERATION_MODE = 'flagged_review';
+
+function getSavedModerationMode() {
+    try {
+        const savedMode = localStorage.getItem(MODERATION_MODE_STORAGE_KEY);
+        return ['all_review', 'flagged_review', 'auto_block'].includes(savedMode)
+            ? savedMode
+            : DEFAULT_MODERATION_MODE;
+    } catch (error) {
+        return DEFAULT_MODERATION_MODE;
+    }
+}
+
+let moderationMode = getSavedModerationMode();
 
 // Fallback toxic words list in case JSON load fails
 let toxicWordsList = [

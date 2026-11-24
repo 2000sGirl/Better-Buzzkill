@@ -30,6 +30,18 @@ function clearApiKeyFromUI() {
     renderApiKeyStatus();
 }
 
+// Save the OP's moderation preference in this browser
+function setModerationMode(mode) {
+    if (!['all_review', 'flagged_review', 'auto_block'].includes(mode)) return;
+
+    moderationMode = mode;
+    try {
+        localStorage.setItem(MODERATION_MODE_STORAGE_KEY, mode);
+    } catch (error) {
+        console.warn('Could not save moderation setting:', error);
+    }
+}
+
 // Toggle the post's like state
 function togglePostLike() {
     postLiked = !postLiked;
@@ -85,8 +97,13 @@ async function handleCommentSubmit(event) {
             ? evaluateSentimentResult(apiRawResult)
             : { isNegative: false, label: null };
 
-        // 3. Intercept if flagged by either local keywords or negative sentiment
-        if (localAnalysis.isToxic || sentimentAnalysis.isNegative) {
+        // Apply the OP's selected behavior after combining both flagging sources.
+        const isFlagged = localAnalysis.isToxic || sentimentAnalysis.isNegative;
+        const pendingByMode = moderationMode === 'all_review'
+            || (moderationMode === 'flagged_review' && isFlagged);
+        const blockedByMode = moderationMode === 'auto_block' && isFlagged;
+
+        if (pendingByMode) {
             const pendingEntry = {
                 id: Date.now(),
                 user: "guest_user",
@@ -95,18 +112,28 @@ async function handleCommentSubmit(event) {
                 sentimentLabel: sentimentAnalysis.isNegative ? sentimentAnalysis.label : null,
                 time: getFormattedTime()
             };
+            if (!isFlagged) pendingEntry.reviewLabel = 'Manual review';
             pendingComments.unshift(pendingEntry);
 
             const reasons = [];
             if (localAnalysis.isToxic) reasons.push('blocked word');
             if (sentimentAnalysis.isNegative) reasons.push('negative sentiment');
-            const reasonText = `Comment held for review: ${reasons.join(' and ')}.`;
+            const reasonText = isFlagged
+                ? `Comment held for review: ${reasons.join(' and ')}.`
+                : 'Comment sent for review.';
 
             if (typeof triggerEvaporationAnimation === 'function') {
                 triggerEvaporationAnimation(commentText, reasonText);
             }
+        } else if (blockedByMode) {
+            const reasons = [];
+            if (localAnalysis.isToxic) reasons.push('blocked word');
+            if (sentimentAnalysis.isNegative) reasons.push('negative sentiment');
+            if (typeof triggerEvaporationAnimation === 'function') {
+                triggerEvaporationAnimation(commentText, `Comment blocked automatically: ${reasons.join(' and ')}.`);
+            }
         } else {
-            // Positive or neutral comment: Post publicly immediately
+            // Non-flagged comment: Post publicly immediately
             const publicEntry = {
                 id: Date.now(),
                 user: "guest_user",
