@@ -1,3 +1,8 @@
+/* Instagram-inspired gradient for the page area surrounding the app */
+.brand-gradient-background {
+    background: linear-gradient(135deg, #833ab4 0%, #e1306c 48%, #fd8d32 78%, #fcb045 100%);
+}
+
 /* Custom scrollbar styling for feed and comment lists */
 .custom-scrollbar::-webkit-scrollbar {
     width: 4px;

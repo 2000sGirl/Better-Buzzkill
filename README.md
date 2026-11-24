@@ -18,3 +18,4 @@ HTML5
 CSS3 (Mobile-first responsive styling)
 
 Vanilla JavaScript (Split into Data, Rules, Display, and Start modules)
+

@@ -102,7 +102,7 @@ function renderPublicComments() {
                 <span class="text-gray-700">${escapeHTML(comment.text)}</span>
                 <span class="text-[10px] text-gray-400 ml-2">${comment.time}</span>
             </div>
-            <button class="text-gray-300 hover:text-red-500 transition-colors text-[10px]"><i class="fa-regular fa-heart"></i></button>
+            <button type="button" onclick="toggleCommentLike(${comment.id})" aria-label="${comment.liked ? 'Unlike' : 'Like'} comment by ${escapeHTML(comment.user)}" aria-pressed="${Boolean(comment.liked)}" class="${comment.liked ? 'text-red-500' : 'text-gray-300'} hover:text-red-500 transition-colors text-[10px]"><i class="${comment.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i></button>
         `;
         listElement.appendChild(item);
     });
@@ -192,8 +192,27 @@ function renderOPQueue() {
 // Re-render all dynamic elements
 function renderViews() {
     renderApiKeyStatus();
+    renderPostLike();
     renderPublicComments();
     renderOPQueue();
+}
+
+// Keep the post like control and count in sync with its state
+function renderPostLike() {
+    const button = document.getElementById('post-like-button');
+    const count = document.getElementById('post-like-count');
+    if (!button || !count) return;
+
+    button.setAttribute('aria-pressed', String(postLiked));
+    button.setAttribute('aria-label', postLiked ? 'Unlike post' : 'Like post');
+    button.classList.toggle('text-red-500', postLiked);
+    button.classList.toggle('text-gray-700', !postLiked);
+    const icon = button.querySelector('i');
+    if (icon) {
+        icon.classList.toggle('fa-solid', postLiked);
+        icon.classList.toggle('fa-regular', !postLiked);
+    }
+    count.textContent = `${(1248 + (postLiked ? 1 : 0)).toLocaleString()} likes`;
 }
 
 // Evaporation visual effect when a toxic or negative comment is submitted

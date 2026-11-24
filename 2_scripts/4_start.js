@@ -30,6 +30,30 @@ function clearApiKeyFromUI() {
     renderApiKeyStatus();
 }
 
+// Toggle the post's like state
+function togglePostLike() {
+    postLiked = !postLiked;
+    renderPostLike();
+}
+
+// Toggle a comment's like state
+function toggleCommentLike(commentId) {
+    const comment = publicComments.find(item => item.id === commentId);
+    if (!comment) return;
+
+    comment.liked = !comment.liked;
+    renderPublicComments();
+}
+
+// Navigate to the comment area and focus its input
+function goToCommentSection() {
+    const input = document.getElementById('comment-input');
+    if (!input) return;
+
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    input.focus({ preventScroll: true });
+}
+
 // Submit Comment Handler
 async function handleCommentSubmit(event) {
     event.preventDefault();

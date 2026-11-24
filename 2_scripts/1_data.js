@@ -88,6 +88,7 @@ async function fetchSentimentFromApi(text) {
 }
 
 // Publicly visible comments store
+let postLiked = false;
 let publicComments = [
     { id: 1, user: "jordan_k", text: "Love this look! 🔥", time: "1h ago" },
     { id: 2, user: "creative_mind", text: "Super clean aesthetic!", time: "45m ago" }
