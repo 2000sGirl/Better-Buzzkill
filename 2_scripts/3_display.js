@@ -44,7 +44,7 @@ function renderApiKeyStatus() {
 
     const hasKey = Boolean(getSavedApiKey());
     if (hasKey) {
-        badge.textContent = 'Key saved locally';
+        badge.textContent = 'Key Saved Locally';
         badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700';
     } else {
         badge.textContent = 'Not saved';
@@ -61,6 +61,8 @@ function renderModerationMode() {
 // Render the OP's saved custom words and phrases
 function renderCustomBlockedWords() {
     const listElement = document.getElementById('custom-blocked-words-list');
+    const autoBlockToggle = document.getElementById('custom-word-auto-block');
+    if (autoBlockToggle) autoBlockToggle.checked = customBlockedWordsAutoBlock;
     if (!listElement) return;
 
     if (customBlockedWords.length === 0) {

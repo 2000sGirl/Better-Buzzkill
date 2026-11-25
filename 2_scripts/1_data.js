@@ -3,6 +3,7 @@
 const API_KEY_STORAGE_NAME = 'buzzkill_api_ninjas_key';
 const MODERATION_MODE_STORAGE_KEY = 'buzzkill_moderation_mode';
 const CUSTOM_BLOCKED_WORDS_STORAGE_KEY = 'buzzkill_custom_blocked_words';
+const CUSTOM_WORDS_AUTO_BLOCK_STORAGE_KEY = 'buzzkill_custom_words_auto_block';
 const SENTIMENT_API_URL = 'https://api.api-ninjas.com/v1/sentiment';
 const DEFAULT_MODERATION_MODE = 'flagged_review';
 
@@ -34,6 +35,16 @@ function getSavedCustomBlockedWords() {
 
 let customBlockedWords = getSavedCustomBlockedWords();
 
+function getSavedCustomWordsAutoBlock() {
+    try {
+        return localStorage.getItem(CUSTOM_WORDS_AUTO_BLOCK_STORAGE_KEY) === 'true';
+    } catch (error) {
+        return false;
+    }
+}
+
+let customBlockedWordsAutoBlock = getSavedCustomWordsAutoBlock();
+
 function saveCustomBlockedWords() {
     try {
         localStorage.setItem(CUSTOM_BLOCKED_WORDS_STORAGE_KEY, JSON.stringify(customBlockedWords));
@@ -59,11 +70,11 @@ let toxicWordsList = [
     "promo", "ratio", "salty", "scam", "scammer", "spam", "stupid", "tacky",
     "terrible", "toxic", "trash", "tryhard", "ugly", "unattractive",
     "unfollow", "useless", "wack", "washed", "worthless", "yikes",
-    "beaner", "camel jockey", "chink", "christ killer", "cripple", "dyke",
+    "beaner", "bitch", "camel jockey", "chink", "christ killer", "cripple", "dyke",
     "fag", "faggot", "gook", "half-breed", "hebe", "jap", "kike",
     "mongoloid", "nigga", "nigger", "paki", "polack", "raghead", "redskin",
     "retard", "retarded", "sheeny", "shemale", "slope", "spaz", "spic",
-    "towelhead", "tranny", "wetback", "zipperhead"
+    "slut", "towelhead", "tranny", "wetback", "whore", "zipperhead"
 ];
 
 // Load toxic words list from JSON file with no-store cache

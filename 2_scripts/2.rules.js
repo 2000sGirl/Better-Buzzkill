@@ -7,16 +7,24 @@
  */
 function analyzeComment(text) {
     const cleanText = text.toLowerCase();
-    const wordsToCheck = [...toxicWordsList, ...customBlockedWords];
-    for (let word of wordsToCheck) {
+    // Check OP-added terms first so the custom auto-block option can identify them.
+    for (let word of customBlockedWords) {
         // Word boundary check to prevent false positives inside safe words
         const safeWord = String(word).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(`\\b${safeWord}\\b`, 'i');
         if (regex.test(cleanText)) {
-            return { isToxic: true, word: word };
+            return { isToxic: true, word: word, isCustom: true };
         }
     }
-    return { isToxic: false, word: null };
+
+    for (let word of toxicWordsList) {
+        const safeWord = String(word).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`\\b${safeWord}\\b`, 'i');
+        if (regex.test(cleanText)) {
+            return { isToxic: true, word: word, isCustom: false };
+        }
+    }
+    return { isToxic: false, word: null, isCustom: false };
 }
 
 /**

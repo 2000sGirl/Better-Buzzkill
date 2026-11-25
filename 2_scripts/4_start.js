@@ -69,6 +69,16 @@ function removeCustomBlockedWord(index) {
     renderCustomBlockedWords();
 }
 
+// Set whether custom word matches bypass the review queue
+function setCustomWordsAutoBlock(shouldAutoBlock) {
+    customBlockedWordsAutoBlock = Boolean(shouldAutoBlock);
+    try {
+        localStorage.setItem(CUSTOM_WORDS_AUTO_BLOCK_STORAGE_KEY, String(customBlockedWordsAutoBlock));
+    } catch (error) {
+        console.warn('Could not save custom word blocking setting:', error);
+    }
+}
+
 // Toggle the post's like state
 function togglePostLike() {
     postLiked = !postLiked;
@@ -110,9 +120,12 @@ async function handleCommentSubmit(event) {
         const localAnalysis = (typeof analyzeComment === 'function')
             ? analyzeComment(commentText)
             : { isToxic: false, word: null };
+        const customWordAutoBlocked = localAnalysis.isCustom && customBlockedWordsAutoBlock;
 
         // 2. Check API Ninjas Sentiment if an API key is saved in localStorage
-        const apiRawResult = (typeof fetchSentimentFromApi === 'function')
+        const apiRawResult = customWordAutoBlocked
+            ? { skipped: true }
+            : (typeof fetchSentimentFromApi === 'function')
             ? await fetchSentimentFromApi(commentText)
             : { skipped: true };
 
@@ -126,9 +139,11 @@ async function handleCommentSubmit(event) {
 
         // Apply the OP's selected behavior after combining both flagging sources.
         const isFlagged = localAnalysis.isToxic || sentimentAnalysis.isNegative;
-        const pendingByMode = moderationMode === 'all_review'
-            || (moderationMode === 'flagged_review' && isFlagged);
-        const blockedByMode = moderationMode === 'auto_block' && isFlagged;
+        const pendingByMode = !customWordAutoBlocked && (
+            moderationMode === 'all_review'
+            || (moderationMode === 'flagged_review' && isFlagged)
+        );
+        const blockedByMode = customWordAutoBlocked || (moderationMode === 'auto_block' && isFlagged);
 
         if (pendingByMode) {
             const pendingEntry = {

@@ -9,7 +9,7 @@
     <!-- FontAwesome for Instagram-like icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom stylesheet -->
-    <link rel="stylesheet" href="3_styles/style.css?v=4">
+    <link rel="stylesheet" href="3_styles/style.css?v=8">
 </head>
 <body class="brand-gradient-background font-sans antialiased text-gray-900 min-h-screen flex flex-col items-center">
 
@@ -118,7 +118,7 @@
             <!-- Header for OP Queue -->
             <div class="flex justify-between items-center mb-4">
                 <div>
-                    <h3 class="text-sm font-bold text-gray-800">Pending Comment Approvals</h3>
+                    <h3 class="text-sm font-bold text-gray-800">Comment Review</h3>
                     <p class="text-xs text-gray-500">Comments held by your moderation setting appear here.</p>
                 </div>
                 <span id="op-queue-badge" class="op-queue-count op-queue-count-empty">
@@ -134,7 +134,7 @@
             <!-- Comment moderation behavior -->
             <fieldset class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
                 <legend class="text-sm font-bold text-gray-800 px-1">Comment Moderation</legend>
-                <p class="text-xs text-gray-500 mb-2">Choose what happens when someone posts a comment. Changes apply to new comments.</p>
+                <p class="text-xs text-gray-500 mb-2">Choose what happens when someone posts a comment.</p>
                 <div class="space-y-2">
                     <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
                         <input type="radio" name="moderation-mode" value="all_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
@@ -154,7 +154,7 @@
             <!-- OP-managed blocked words and phrases -->
             <fieldset class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
                 <legend class="text-sm font-bold text-gray-800 px-1">Custom Blocked Words</legend>
-                <p class="text-xs text-gray-500 mb-2">Add words or phrases to flag. Your moderation setting decides whether they go to review or are blocked.</p>
+                <p class="text-xs text-gray-500 mb-2">Add words or phrases to flag.</p>
                 <div class="flex items-center gap-2">
                     <input
                         type="text"
@@ -170,6 +170,13 @@
                     </button>
                 </div>
                 <div id="custom-blocked-words-list" class="flex flex-wrap gap-2 mt-3"></div>
+                <div class="flex justify-end mt-3">
+                    <label class="custom-word-switch" aria-label="Block always">
+                        <input type="checkbox" id="custom-word-auto-block" role="switch" onchange="setCustomWordsAutoBlock(this.checked)">
+                        <span class="custom-word-switch-track"><span></span></span>
+                        <span class="text-[10px] text-gray-500">Block Always</span>
+                    </label>
+                </div>
             </fieldset>
 
             <!-- API Ninjas Secret Key Box (Stored only in browser localStorage) -->
@@ -206,9 +213,9 @@
     </main>
 
     <!-- Numbered Layered Scripts loaded in sequence -->
-    <script src="2_scripts/1_data.js?v=8"></script>
-    <script src="2_scripts/2.rules.js?v=7"></script>
-    <script src="2_scripts/3_display.js?v=11"></script>
-    <script src="2_scripts/4_start.js?v=7"></script>
+    <script src="2_scripts/1_data.js?v=9"></script>
+    <script src="2_scripts/2.rules.js?v=8"></script>
+    <script src="2_scripts/3_display.js?v=13"></script>
+    <script src="2_scripts/4_start.js?v=9"></script>
 </body>
 </html>
