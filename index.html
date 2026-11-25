@@ -118,7 +118,7 @@
             <!-- Header for OP Queue -->
             <div class="flex justify-between items-center mb-4">
                 <div>
-                    <h3 class="text-sm font-bold text-gray-800">Comment Review</h3>
+                    <h3 class="text-base font-semibold text-gray-800">Comment Review</h3>
                     <p class="text-xs text-gray-500">Comments held by your moderation setting appear here.</p>
                 </div>
                 <span id="op-queue-badge" class="op-queue-count op-queue-count-empty">
@@ -133,27 +133,27 @@
 
             <!-- Comment moderation behavior -->
             <fieldset class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
-                <legend class="text-sm font-bold text-gray-800 px-1">Comment Moderation</legend>
+                <legend class="text-base font-semibold text-gray-800 px-1">Comment Moderation</legend>
                 <p class="text-xs text-gray-500 mb-2">Choose what happens when someone posts a comment.</p>
                 <div class="space-y-2">
-                    <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
                         <input type="radio" name="moderation-mode" value="all_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
-                        <span><span class="font-semibold">Review every comment</span><br><span class="text-xs text-gray-500">All comments wait for your approval.</span></span>
+                        <span><span class="text-sm font-semibold">Review Every Comment</span><br><span class="text-xs text-gray-500">All comments are sent to Comment Review.</span></span>
                     </label>
-                    <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
                         <input type="radio" name="moderation-mode" value="flagged_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
-                        <span><span class="font-semibold">Review flagged comments</span><br><span class="text-xs text-gray-500">Blocked words and negative sentiment wait for your approval.</span></span>
+                        <span><span class="text-sm font-semibold">Review Flagged Comments</span><br><span class="text-xs text-gray-500">Flagged hate comments are sent to Comment Review.</span></span>
                     </label>
-                    <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
                         <input type="radio" name="moderation-mode" value="auto_block" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
-                        <span><span class="font-semibold">Block flagged comments</span><br><span class="text-xs text-gray-500">Flagged comments are blocked without entering the review queue.</span></span>
+                        <span><span class="text-sm font-semibold">Block Flagged Comments</span><br><span class="text-xs text-gray-500">Flagged hate comments are automatically blocked.</span></span>
                     </label>
                 </div>
             </fieldset>
 
             <!-- OP-managed blocked words and phrases -->
             <fieldset class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
-                <legend class="text-sm font-bold text-gray-800 px-1">Custom Blocked Words</legend>
+                <legend class="text-base font-semibold text-gray-800 px-1">Custom Blocked Words</legend>
                 <p class="text-xs text-gray-500 mb-2">Add words or phrases to flag.</p>
                 <div class="flex items-center gap-2">
                     <input
@@ -182,28 +182,28 @@
             <!-- API Ninjas Secret Key Box (Stored only in browser localStorage) -->
             <div class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
                 <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-xs font-bold text-gray-800 flex items-center gap-1.5">
+                    <span class="text-base font-semibold text-gray-800 flex items-center gap-1.5">
                         <i class="fa-solid fa-key text-purple-600"></i> API Ninjas Sentiment Key
                     </span>
                     <span id="api-key-status-badge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                         Not saved
                     </span>
                 </div>
-                <p class="text-[11px] text-gray-500 mb-2">
+                <p class="text-xs text-gray-500 mb-2">
                     Saved privately in your browser only—never uploaded to GitHub.
                 </p>
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-2">
                     <input
                         type="password"
                         id="api-key-input"
                         placeholder="Paste X-Api-Key here..."
-                        class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-purple-400"
+                        class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
                         autocomplete="off"
                     >
-                    <button type="button" onclick="saveApiKeyFromUI()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+                    <button type="button" onclick="saveApiKeyFromUI()" class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-3 py-2 rounded-lg transition-colors">
                         Save
                     </button>
-                    <button type="button" onclick="clearApiKeyFromUI()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors">
+                    <button type="button" onclick="clearApiKeyFromUI()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-semibold px-3 py-2 rounded-lg transition-colors">
                         Clear
                     </button>
                 </div>
@@ -213,9 +213,9 @@
     </main>
 
     <!-- Numbered Layered Scripts loaded in sequence -->
-    <script src="2_scripts/1_data.js?v=9"></script>
+    <script src="2_scripts/1_data.js?v=10"></script>
     <script src="2_scripts/2.rules.js?v=8"></script>
-    <script src="2_scripts/3_display.js?v=13"></script>
+    <script src="2_scripts/3_display.js?v=16"></script>
     <script src="2_scripts/4_start.js?v=9"></script>
 </body>
 </html>

@@ -60,7 +60,7 @@ let toxicWordsList = [
     "nobody asked", "not it", "please no", "shut up", "skill issue",
     "so fake", "stop posting", "touch grass", "try harder", "waste of time",
     "who asked", "why post this", "zio", "annoying", "awful", "bizarre", "boring",
-    "bot", "bozo", "cancel", "cheap", "clickbait", "clown", "clueless",
+    "bot", "bozo", "cancel", "cheap", "chopped", "clickbait", "clown", "clueless",
     "corny", "cringe", "cringey", "cringing", "delulu", "desperate",
     "disaster", "disgusting", "dumb", "embarrassing", "embarrassment",
     "fail", "failure", "fake", "flop", "fraud", "garbage", "gross", "hate",

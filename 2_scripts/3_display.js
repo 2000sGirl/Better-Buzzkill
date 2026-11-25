@@ -163,8 +163,8 @@ function renderOPQueue() {
     if (pendingComments.length === 0) {
         listElement.innerHTML = `
             <div class="op-empty-state text-center py-10 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-                <i class="fa-solid fa-circle-check text-green-500 text-3xl mb-2"></i>
-                <p class="text-xs font-bold text-gray-700">All clear!</p>
+                <i class="fa-solid fa-circle-check text-green-500 text-4xl mb-3"></i>
+                <p class="text-base font-semibold text-black">All clear!</p>
             </div>
         `;
         return;
