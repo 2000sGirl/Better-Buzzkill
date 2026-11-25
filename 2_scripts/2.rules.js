@@ -7,9 +7,11 @@
  */
 function analyzeComment(text) {
     const cleanText = text.toLowerCase();
-    for (let word of toxicWordsList) {
+    const wordsToCheck = [...toxicWordsList, ...customBlockedWords];
+    for (let word of wordsToCheck) {
         // Word boundary check to prevent false positives inside safe words
-        const regex = new RegExp(`\\b${word}\\b`, 'i');
+        const safeWord = String(word).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`\\b${safeWord}\\b`, 'i');
         if (regex.test(cleanText)) {
             return { isToxic: true, word: word };
         }

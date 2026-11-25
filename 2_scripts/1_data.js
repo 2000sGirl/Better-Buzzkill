@@ -2,6 +2,7 @@
 
 const API_KEY_STORAGE_NAME = 'buzzkill_api_ninjas_key';
 const MODERATION_MODE_STORAGE_KEY = 'buzzkill_moderation_mode';
+const CUSTOM_BLOCKED_WORDS_STORAGE_KEY = 'buzzkill_custom_blocked_words';
 const SENTIMENT_API_URL = 'https://api.api-ninjas.com/v1/sentiment';
 const DEFAULT_MODERATION_MODE = 'flagged_review';
 
@@ -18,13 +19,36 @@ function getSavedModerationMode() {
 
 let moderationMode = getSavedModerationMode();
 
+function getSavedCustomBlockedWords() {
+    try {
+        const savedWords = JSON.parse(localStorage.getItem(CUSTOM_BLOCKED_WORDS_STORAGE_KEY) || '[]');
+        if (!Array.isArray(savedWords)) return [];
+        return savedWords
+            .filter(word => typeof word === 'string')
+            .map(word => word.trim())
+            .filter(Boolean);
+    } catch (error) {
+        return [];
+    }
+}
+
+let customBlockedWords = getSavedCustomBlockedWords();
+
+function saveCustomBlockedWords() {
+    try {
+        localStorage.setItem(CUSTOM_BLOCKED_WORDS_STORAGE_KEY, JSON.stringify(customBlockedWords));
+    } catch (error) {
+        console.warn('Could not save custom blocked words:', error);
+    }
+}
+
 // Fallback toxic words list in case JSON load fails
 let toxicWordsList = [
     "attention-seeking", "attention-seeker", "delete this", "do better",
     "fell off", "give up", "go away", "hard watch", "looks cheap",
     "nobody asked", "not it", "please no", "shut up", "skill issue",
     "so fake", "stop posting", "touch grass", "try harder", "waste of time",
-    "who asked", "why post this", "annoying", "awful", "bizarre", "boring",
+    "who asked", "why post this", "zio", "annoying", "awful", "bizarre", "boring",
     "bot", "bozo", "cancel", "cheap", "clickbait", "clown", "clueless",
     "corny", "cringe", "cringey", "cringing", "delulu", "desperate",
     "disaster", "disgusting", "dumb", "embarrassing", "embarrassment",
@@ -34,7 +58,12 @@ let toxicWordsList = [
     "parasocial", "pathetic", "phony", "pickme", "pointless", "pressed",
     "promo", "ratio", "salty", "scam", "scammer", "spam", "stupid", "tacky",
     "terrible", "toxic", "trash", "tryhard", "ugly", "unattractive",
-    "unfollow", "useless", "wack", "washed", "worthless", "yikes"
+    "unfollow", "useless", "wack", "washed", "worthless", "yikes",
+    "beaner", "camel jockey", "chink", "christ killer", "cripple", "dyke",
+    "fag", "faggot", "gook", "half-breed", "hebe", "jap", "kike",
+    "mongoloid", "nigga", "nigger", "paki", "polack", "raghead", "redskin",
+    "retard", "retarded", "sheeny", "shemale", "slope", "spaz", "spic",
+    "towelhead", "tranny", "wetback", "zipperhead"
 ];
 
 // Load toxic words list from JSON file with no-store cache

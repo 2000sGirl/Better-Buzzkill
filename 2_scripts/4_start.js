@@ -42,6 +42,33 @@ function setModerationMode(mode) {
     }
 }
 
+// Add a custom word or phrase to the local moderation list
+function addCustomBlockedWord() {
+    const input = document.getElementById('custom-blocked-word-input');
+    if (!input) return;
+
+    const word = input.value.trim();
+    if (!word) return;
+
+    const alreadyExists = customBlockedWords.some(savedWord => savedWord.toLowerCase() === word.toLowerCase());
+    if (!alreadyExists) {
+        customBlockedWords.push(word);
+        saveCustomBlockedWords();
+    }
+
+    input.value = '';
+    renderCustomBlockedWords();
+}
+
+// Remove one custom word or phrase by its displayed list position
+function removeCustomBlockedWord(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= customBlockedWords.length) return;
+
+    customBlockedWords.splice(index, 1);
+    saveCustomBlockedWords();
+    renderCustomBlockedWords();
+}
+
 // Toggle the post's like state
 function togglePostLike() {
     postLiked = !postLiked;
@@ -112,7 +139,6 @@ async function handleCommentSubmit(event) {
                 sentimentLabel: sentimentAnalysis.isNegative ? sentimentAnalysis.label : null,
                 time: getFormattedTime()
             };
-            if (!isFlagged) pendingEntry.reviewLabel = 'Manual review';
             pendingComments.unshift(pendingEntry);
 
             const reasonText = isFlagged

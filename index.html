@@ -9,7 +9,7 @@
     <!-- FontAwesome for Instagram-like icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom stylesheet -->
-    <link rel="stylesheet" href="3_styles/style.css">
+    <link rel="stylesheet" href="3_styles/style.css?v=4">
 </head>
 <body class="brand-gradient-background font-sans antialiased text-gray-900 min-h-screen flex flex-col items-center">
 
@@ -81,12 +81,11 @@
                 </div>
 
                 <!-- Floating Feedback Notice (Evaporation Toast) -->
-                <div id="evaporation-toast" class="hidden mt-2 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 flex items-center justify-between transition-all">
+                <div id="evaporation-toast" class="hidden mt-2 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 flex items-center transition-all">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-wand-magic-sparkles text-red-500"></i>
                         <span id="evaporation-toast-text">Buzz killed.</span>
                     </div>
-                    <span class="text-[10px] bg-red-100 text-red-700 font-semibold px-2 py-0.5 rounded">Intercepted</span>
                 </div>
 
                 <!-- Friendly API Status Warning Banner -->
@@ -116,6 +115,63 @@
 
         <!-- ================= OP (ORIGINAL POSTER) REVIEW VIEW ================= -->
         <div id="view-op-container" class="hidden flex-1 flex flex-col p-4 bg-gray-50">
+            <!-- Header for OP Queue -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800">Pending Comment Approvals</h3>
+                    <p class="text-xs text-gray-500">Comments held by your moderation setting appear here.</p>
+                </div>
+                <span id="op-queue-badge" class="op-queue-count op-queue-count-empty">
+                    0 Pending
+                </span>
+            </div>
+
+            <!-- Moderation Cards Queue -->
+            <div id="op-review-list" class="space-y-3 flex-1 overflow-y-auto custom-scrollbar pr-1 mb-4">
+                <!-- Dynamically populated review cards -->
+            </div>
+
+            <!-- Comment moderation behavior -->
+            <fieldset class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
+                <legend class="text-sm font-bold text-gray-800 px-1">Comment Moderation</legend>
+                <p class="text-xs text-gray-500 mb-2">Choose what happens when someone posts a comment. Changes apply to new comments.</p>
+                <div class="space-y-2">
+                    <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input type="radio" name="moderation-mode" value="all_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
+                        <span><span class="font-semibold">Review every comment</span><br><span class="text-xs text-gray-500">All comments wait for your approval.</span></span>
+                    </label>
+                    <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input type="radio" name="moderation-mode" value="flagged_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
+                        <span><span class="font-semibold">Review flagged comments</span><br><span class="text-xs text-gray-500">Blocked words and negative sentiment wait for your approval.</span></span>
+                    </label>
+                    <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input type="radio" name="moderation-mode" value="auto_block" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
+                        <span><span class="font-semibold">Block flagged comments</span><br><span class="text-xs text-gray-500">Flagged comments are blocked without entering the review queue.</span></span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <!-- OP-managed blocked words and phrases -->
+            <fieldset class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
+                <legend class="text-sm font-bold text-gray-800 px-1">Custom Blocked Words</legend>
+                <p class="text-xs text-gray-500 mb-2">Add words or phrases to flag. Your moderation setting decides whether they go to review or are blocked.</p>
+                <div class="flex items-center gap-2">
+                    <input
+                        type="text"
+                        id="custom-blocked-word-input"
+                        placeholder="Add a word or phrase..."
+                        maxlength="80"
+                        onkeydown="if (event.key === 'Enter') { event.preventDefault(); addCustomBlockedWord(); }"
+                        class="flex-1 min-w-0 bg-gray-50 border border-gray-200 px-2.5 py-2 text-sm focus:outline-none focus:border-purple-400"
+                        autocomplete="off"
+                    >
+                    <button type="button" onclick="addCustomBlockedWord()" class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-3 py-2 transition-colors">
+                        Add
+                    </button>
+                </div>
+                <div id="custom-blocked-words-list" class="flex flex-wrap gap-2 mt-3"></div>
+            </fieldset>
+
             <!-- API Ninjas Secret Key Box (Stored only in browser localStorage) -->
             <div class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
                 <div class="flex items-center justify-between mb-1.5">
@@ -145,50 +201,14 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Comment moderation behavior -->
-            <fieldset class="bg-white border border-gray-200 rounded-xl p-3 mb-4 shadow-sm">
-                <legend class="text-xs font-bold text-gray-800 px-1">Comment Moderation</legend>
-                <p class="text-[11px] text-gray-500 mb-2">Choose what happens when someone posts a comment. Changes apply to new comments.</p>
-                <div class="space-y-2">
-                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
-                        <input type="radio" name="moderation-mode" value="all_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
-                        <span><span class="font-semibold">Review every comment</span><br><span class="text-[11px] text-gray-500">All comments wait for your approval.</span></span>
-                    </label>
-                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
-                        <input type="radio" name="moderation-mode" value="flagged_review" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
-                        <span><span class="font-semibold">Review flagged comments</span><br><span class="text-[11px] text-gray-500">Blocked words and negative sentiment wait for your approval.</span></span>
-                    </label>
-                    <label class="flex items-start gap-2 text-xs text-gray-700 cursor-pointer">
-                        <input type="radio" name="moderation-mode" value="auto_block" onchange="setModerationMode(this.value)" class="mt-0.5 accent-purple-600">
-                        <span><span class="font-semibold">Block flagged comments</span><br><span class="text-[11px] text-gray-500">Flagged comments are blocked without entering the review queue.</span></span>
-                    </label>
-                </div>
-            </fieldset>
-
-            <!-- Header for OP Queue -->
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h3 class="text-sm font-bold text-gray-800">Pending Comment Approvals</h3>
-                    <p class="text-xs text-gray-500">Comments held by your moderation setting appear here.</p>
-                </div>
-                <span id="op-queue-badge" class="bg-purple-100 text-purple-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                    0 Pending
-                </span>
-            </div>
-
-            <!-- Moderation Cards Queue -->
-            <div id="op-review-list" class="space-y-3 flex-1 overflow-y-auto custom-scrollbar pr-1">
-                <!-- Dynamically populated review cards -->
-            </div>
         </div>
 
     </main>
 
     <!-- Numbered Layered Scripts loaded in sequence -->
-    <script src="2_scripts/1_data.js?v=5"></script>
-    <script src="2_scripts/2.rules.js?v=6"></script>
-    <script src="2_scripts/3_display.js?v=7"></script>
-    <script src="2_scripts/4_start.js?v=6"></script>
+    <script src="2_scripts/1_data.js?v=8"></script>
+    <script src="2_scripts/2.rules.js?v=7"></script>
+    <script src="2_scripts/3_display.js?v=11"></script>
+    <script src="2_scripts/4_start.js?v=7"></script>
 </body>
 </html>

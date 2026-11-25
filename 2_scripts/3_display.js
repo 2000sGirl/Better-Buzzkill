@@ -58,6 +58,25 @@ function renderModerationMode() {
     if (selectedMode) selectedMode.checked = true;
 }
 
+// Render the OP's saved custom words and phrases
+function renderCustomBlockedWords() {
+    const listElement = document.getElementById('custom-blocked-words-list');
+    if (!listElement) return;
+
+    if (customBlockedWords.length === 0) {
+        listElement.innerHTML = '<span class="text-xs text-gray-400">No custom words added yet.</span>';
+        return;
+    }
+
+    listElement.innerHTML = '';
+    customBlockedWords.forEach((word, index) => {
+        const item = document.createElement('span');
+        item.className = 'inline-flex items-center gap-2 bg-purple-50 border border-purple-200 px-2 py-1 text-xs text-purple-800';
+        item.innerHTML = `${escapeHTML(word)} <button type="button" onclick="removeCustomBlockedWord(${index})" aria-label="Remove ${escapeHTML(word)}" class="font-bold text-purple-600 hover:text-red-600">&times;</button>`;
+        listElement.appendChild(item);
+    });
+}
+
 // Show or hide a friendly API warning banner on the page
 function showApiStatusBanner(message) {
     const banner = document.getElementById('api-status-banner');
@@ -130,19 +149,20 @@ function renderOPQueue() {
         badgeCount.textContent = pendingComments.length;
         badgeCount.classList.remove('hidden');
         queueBadge.textContent = `${pendingComments.length} Pending`;
+        queueBadge.className = 'op-queue-count op-queue-count-active';
     } else {
         badgeCount.classList.add('hidden');
         queueBadge.textContent = `0 Pending`;
+        queueBadge.className = 'op-queue-count op-queue-count-empty';
     }
 
     listElement.innerHTML = '';
 
     if (pendingComments.length === 0) {
         listElement.innerHTML = `
-            <div class="text-center py-10 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <div class="op-empty-state text-center py-10 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                 <i class="fa-solid fa-circle-check text-green-500 text-3xl mb-2"></i>
                 <p class="text-xs font-bold text-gray-700">All clear!</p>
-                <p class="text-[11px] text-gray-400 mt-1">No comments currently awaiting review.</p>
             </div>
         `;
         return;
@@ -150,12 +170,8 @@ function renderOPQueue() {
 
     pendingComments.forEach((comment) => {
         const card = document.createElement('div');
-        card.className = "bg-white border border-gray-200 rounded-xl p-3 shadow-sm flex flex-col justify-between space-y-2 transition-all hover:border-purple-200";
+        card.className = "op-review-card bg-white border border-gray-200 rounded-xl p-3 shadow-sm flex flex-col justify-between space-y-2 transition-all hover:border-purple-200";
         
-        const reviewBadge = comment.reviewLabel
-            ? `<span class="bg-purple-50 text-purple-700 border border-purple-200 text-[10px] px-2 py-0.5 rounded-full font-medium">${escapeHTML(comment.reviewLabel)}</span>`
-            : '';
-
         card.innerHTML = `
             <div class="flex justify-between items-start gap-2 flex-wrap">
                 <div class="flex items-center space-x-2">
@@ -164,7 +180,6 @@ function renderOPQueue() {
                     </span>
                     <span class="text-xs font-bold text-gray-800">${comment.user}</span>
                 </div>
-                ${reviewBadge ? `<div class="flex items-center gap-1 flex-wrap">${reviewBadge}</div>` : ''}
             </div>
 
             <p class="text-xs text-gray-800 bg-gray-50 p-2 rounded-lg border border-gray-100 italic">
@@ -188,6 +203,7 @@ function renderOPQueue() {
 function renderViews() {
     renderApiKeyStatus();
     renderModerationMode();
+    renderCustomBlockedWords();
     renderPostLike();
     renderPublicComments();
     renderOPQueue();
