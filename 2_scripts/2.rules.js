@@ -52,9 +52,7 @@ function evaluateSentimentResult(apiResult) {
     const isNegative = sentiment === 'NEGATIVE'
         || sentiment === 'WEAK_NEGATIVE'
         || (score !== null && score < 0);
-    const label = sentiment
-        ? (score === null ? sentiment : `${sentiment} (${score.toFixed(2)})`)
-        : `Score ${score.toFixed(2)}`;
+    const label = sentiment || (isNegative ? 'NEGATIVE' : 'NEUTRAL');
 
     return {
         isNegative: isNegative,

@@ -115,22 +115,16 @@ async function handleCommentSubmit(event) {
             if (!isFlagged) pendingEntry.reviewLabel = 'Manual review';
             pendingComments.unshift(pendingEntry);
 
-            const reasons = [];
-            if (localAnalysis.isToxic) reasons.push('blocked word');
-            if (sentimentAnalysis.isNegative) reasons.push('negative sentiment');
             const reasonText = isFlagged
-                ? `Comment held for review: ${reasons.join(' and ')}.`
+                ? 'Buzz killed.'
                 : 'Comment sent for review.';
 
             if (typeof triggerEvaporationAnimation === 'function') {
                 triggerEvaporationAnimation(commentText, reasonText);
             }
         } else if (blockedByMode) {
-            const reasons = [];
-            if (localAnalysis.isToxic) reasons.push('blocked word');
-            if (sentimentAnalysis.isNegative) reasons.push('negative sentiment');
             if (typeof triggerEvaporationAnimation === 'function') {
-                triggerEvaporationAnimation(commentText, `Comment blocked automatically: ${reasons.join(' and ')}.`);
+                triggerEvaporationAnimation(commentText, 'Buzz killed.');
             }
         } else {
             // Non-flagged comment: Post publicly immediately

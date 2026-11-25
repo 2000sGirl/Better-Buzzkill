@@ -152,17 +152,6 @@ function renderOPQueue() {
         const card = document.createElement('div');
         card.className = "bg-white border border-gray-200 rounded-xl p-3 shadow-sm flex flex-col justify-between space-y-2 transition-all hover:border-purple-200";
         
-        const wordBadge = comment.flaggedWord
-            ? `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] px-2 py-0.5 rounded-full font-medium">
-                   Word: "${escapeHTML(comment.flaggedWord)}"
-               </span>`
-            : '';
-
-        const sentimentBadge = comment.sentimentLabel
-            ? `<span class="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] px-2 py-0.5 rounded-full font-medium">
-                   ${escapeHTML(comment.sentimentLabel)}
-               </span>`
-            : '';
         const reviewBadge = comment.reviewLabel
             ? `<span class="bg-purple-50 text-purple-700 border border-purple-200 text-[10px] px-2 py-0.5 rounded-full font-medium">${escapeHTML(comment.reviewLabel)}</span>`
             : '';
@@ -175,11 +164,7 @@ function renderOPQueue() {
                     </span>
                     <span class="text-xs font-bold text-gray-800">${comment.user}</span>
                 </div>
-                <div class="flex items-center gap-1 flex-wrap">
-                    ${wordBadge}
-                    ${sentimentBadge}
-                    ${reviewBadge}
-                </div>
+                ${reviewBadge ? `<div class="flex items-center gap-1 flex-wrap">${reviewBadge}</div>` : ''}
             </div>
 
             <p class="text-xs text-gray-800 bg-gray-50 p-2 rounded-lg border border-gray-100 italic">
@@ -235,7 +220,7 @@ function triggerEvaporationAnimation(text, reasonMessage) {
     if (!listElement || !toast) return;
 
     if (toastText) {
-        toastText.textContent = reasonMessage || 'Comment filtered due to harmful language.';
+        toastText.textContent = reasonMessage || 'Buzz killed.';
     }
 
     // Temporary element showing comment evaporating
